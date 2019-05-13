@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tarea 4 - VUE</title>
+
+  <link rel="icon" type="image/png" href="imagenes/logo.ico" /> 
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/style.css"> 
+
+</head>
+
+<body>  
+
+  <div class="container">
+
+    <h1>Carros de caballos</h1>
+
+    <br>
+
+
+    <div id="app" class="app mt-3"> 
+
+
+      <ul class="list-group">
+
+       <!-- <story v-for="story in stories" :story="story" :favorite.sync="favorite"> </story>  -->
+
+       <!-- Recorremos el array carros y por cada eleento del array va a imprimir el nombre y numero de caballos -->
+       <carro v-for="carro in carros" :carro="carro" :tiene.sync="tiene"></carro>
+
+     </ul>
+
+
+     <!-- Ahora con template le decimos como van a ser cada linea que encuentre en el array -->
+     <template id="carro-template">
+
+      <li class="list-group-item lista">
+
+        <h2 class="nombre">El carro "{{carro.nombre}}" tiene {{carro.caballos}} caballo/s</h2>
+        <button class="btn botonCarro" @click="pickcarro" :disabled='isDisabled' >{{texto_boton}}</button>
+
+      </li>
+
+    </template>
+
+  </div>
+
+
+  <!-- SCRIPT -->
+
+  <!-- Libreria vue -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.18/vue.js"> </script>
+
+  <!-- Libreria para validar con Vue -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-validator/2.1.5/vue-validator.min.js"></script>
+
+  <script>
+
+//Para importar audios
+
+const addVoto = 'http://soundbible.com/grab.php?id=419&type=mp3';
+
+  Vue.component('carro',{
+    props: ['carro', 'tiene'],
+    template: '#carro-template',
+    methods:{
+      pickcarro: function(){
+        this.tiene = this.carro;
+      },
+      playSound (sound) {          
+        var audio = new Audio(sound);
+        audio.play();
+
+      }
+    },       
+
+
+  computed:{
+
+        //Aqui le pasamos a los botones el valor de texto que van a tener en funcion del boton que se haya clickeado
+        texto_boton: function(){
+
+          // Inicialmente todos los botones van a poner Pick Chariot
+          var text = "Pick Chariot";
+
+          if(this.tiene != null){
+
+            // Si tiene los mismos caballos, es decir, pinchamos en el boton de un carro, ese boton va a poner ahora Riding
+            if(this.tiene == this.carro){
+              text = "Riding";
+              this.playSound(addVoto);
+
+            //Pero para el resto de botones, si tienen menos caballos que el que hemos clickeado, entonces el texto del boton será Dismiss Horses
+          } else if(this.carro.caballos < this.tiene.caballos){
+            text = "Dismiss Horses";
+
+            // pero si tiene mas caballos que el que hemos clickeado, entonces el texto del boton será Hire Horses
+          } else if(this.carro.caballos > this.tiene.caballos){
+            text = "Hire Horses";
+          } 
+
+        }
+
+        return text;
+
+      }, isDisabled: function(){
+
+            //Si el texto del boton es Riding, entonces lo deshabilito.
+
+            if (this.texto_boton!="Riding") {
+              return false;
+            } else {
+              return true;
+            }
+
+          }
+        }
+      });
+
+      new Vue({
+        el: "#app",
+        data:{       
+
+          carros: [{
+            nombre: "Olympus",
+            caballos: 4
+          },
+          {
+            nombre: "Sagitta",
+            caballos: 3
+          },
+          {
+            nombre: "Icarus",
+            caballos: 2
+          },
+          {
+            nombre: "Abraxas",
+            caballos: 1
+          }],
+             
+              },         
+
+      });
+
+    </script>
+
+  </body>
+  </html>
+
